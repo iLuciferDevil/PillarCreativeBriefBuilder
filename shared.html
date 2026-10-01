@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pillar Creative Brief Repository</title>
+<style>
+:root{--bg:#0b1020;--panel:#11182b;--line:#283451;--text:#edf2ff;--muted:#94a3b8;--accent:#7dd3fc;--good:#86efac}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;overflow:hidden}
+.bar{height:66px;display:flex;align-items:center;gap:10px;padding:10px 16px;background:#0d1425;border-bottom:1px solid var(--line)}
+.brand{font-weight:750;margin-right:auto;white-space:nowrap}.brand small{font-weight:400;color:var(--muted);margin-left:8px}.dot{width:9px;height:9px;border-radius:50%;background:#64748b}.dot.on{background:var(--good);box-shadow:0 0 0 4px rgba(134,239,172,.08)}
+.state{font-size:12px;color:var(--muted);white-space:nowrap}.code{width:245px;border:1px solid var(--line);background:#11182b;color:var(--text);border-radius:9px;padding:9px 10px;outline:none}.code:focus{border-color:#4d6a94}
+button{border:1px solid var(--line);border-radius:9px;padding:9px 12px;font-weight:650;cursor:pointer;background:#202a42;color:#fff}.primary{background:linear-gradient(135deg,var(--accent),#60a5fa);color:#07111d;border:0}.ghost{background:transparent;color:#cbd5e1}
+#app{width:100%;height:calc(100vh - 66px);border:0;display:block;background:var(--bg)}
+.toast{position:fixed;right:18px;top:78px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:#11182b;color:#e5e7eb;opacity:0;pointer-events:none;transition:.2s;z-index:20}.toast.show{opacity:1}
+@media(max-width:850px){.bar{height:auto;min-height:66px;flex-wrap:wrap}.brand{width:100%}.brand small{display:none}.code{flex:1;min-width:180px}.state{display:none}#app{height:calc(100vh - 106px)}}
+</style>
+</head>
+<body>
+<div class="bar">
+  <div class="brand">Pillar Creative Briefs <small>Shared repository</small></div>
+  <span id="dot" class="dot"></span><span id="state" class="state">Locked</span>
+  <input id="code" class="code" type="password" placeholder="Pillar team access code" autocomplete="current-password">
+  <button class="primary" onclick="unlockRepo()">Unlock</button>
+  <button class="ghost" onclick="lockRepo()">Lock</button>
+</div>
+<iframe id="app" src="/app.html" title="Pillar Creative Brief Builder"></iframe>
+<div id="toast" class="toast"></div>
+<script>
+const API='https://cpggikitfurjujtjmbnv.supabase.co/functions/v1/pillar-brief-repo';
+const CODE_KEY='pillarCreativeRepoAccessCode';
+let accessCode='';let repoCache=[];let wired=false;
+const frame=document.getElementById('app');
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2400)}
+function state(on,text){document.getElementById('dot').classList.toggle('on',!!on);document.getElementById('state').textContent=text}
+async function api(action,extra={}){const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,code:accessCode,...extra})});const t=await r.text();let data=null;try{data=t?JSON.parse(t):null}catch(e){data=t}if(!r.ok)throw new Error(data?.error||'Repository request failed');return data}
+async function unlockRepo(silent=false){const entered=(document.getElementById('code').value||accessCode||'').trim();if(!entered){if(!silent)toast('Enter the Pillar team access code.');return false}accessCode=entered;try{const ok=await api('check');if(ok!==true)throw new Error('Invalid access code');localStorage.setItem(CODE_KEY,entered);document.getElementById('code').value='';state(true,'Shared repository connected');await refreshRepo();if(!silent)toast('Shared repository connected.');return true}catch(e){accessCode='';state(false,'Locked');if(!silent)toast(e.message);return false}}
+function lockRepo(){accessCode='';repoCache=[];localStorage.removeItem(CODE_KEY);state(false,'Locked');if(wired)frame.contentWindow.renderRepo?.();toast('Repository locked on this device.')}
+async function ensureUnlocked(){if(accessCode)return true;const saved=localStorage.getItem(CODE_KEY);if(saved){accessCode=saved;return unlockRepo(true)}toast('Unlock the shared repository first.');return false}
+async function refreshRepo(){if(!accessCode)return;const rows=await api('list');repoCache=(rows||[]).map(r=>({...r.brief_data,createdAt:r.brief_data?.createdAt||r.created_at,updatedAt:r.brief_data?.updatedAt||r.updated_at}));if(wired){const w=frame.contentWindow;w.renderRepo?.();const c=w.document.getElementById('repoCount');if(c)c.textContent=repoCache.length?`(${repoCache.length})`:''}}
+function wire(){if(wired)return;const w=frame.contentWindow;wired=true;
+  w.getRepo=()=>repoCache;
+  w.setRepo=(r)=>{repoCache=r||[];const c=w.document.getElementById('repoCount');if(c)c.textContent=repoCache.length?`(${repoCache.length})`:''};
+  const originalShow=w.showView;w.showView=(view)=>{originalShow(view);if(view==='repo'&&accessCode)refreshRepo().catch(()=>{})};
+  w.saveBrief=async()=>{if(!w.v('brand')||!w.v('campaign')){w.flash('Add Client / Brand and Campaign / Product first.');return}if(!await ensureUnlocked())return;w.generate();const rec=w.currentRecord();const existing=repoCache.find(x=>x.id===rec.id);rec.createdAt=existing?.createdAt||rec.createdAt||rec.updatedAt;try{await api('save',{brief:rec});await refreshRepo();w.loadBrief(rec.id);w.flash(existing?'Brief updated in shared repository.':'Brief saved to shared repository.')}catch(e){w.flash('Save failed. '+e.message)}};
+  w.duplicateBrief=async(id)=>{if(!await ensureUnlocked())return;const rec=repoCache.find(x=>x.id===id);if(!rec)return;const copy={...rec,id:'BRF-'+Date.now().toString(36).toUpperCase(),campaign:(rec.campaign||'Brief')+' - Copy',briefStatus:'Draft',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};try{await api('save',{brief:copy});await refreshRepo();w.flash('Brief duplicated.')}catch(e){w.flash('Duplicate failed. '+e.message)}};
+  w.deleteBrief=async(id)=>{if(!await ensureUnlocked())return;if(!w.confirm('Delete this brief from the shared repository?'))return;try{await api('delete',{id});await refreshRepo();w.flash('Brief deleted.')}catch(e){w.flash('Delete failed. '+e.message)}};
+  w.exportRepository=()=>{const a=w.document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({exportedAt:new Date().toISOString(),briefs:repoCache},null,2)],{type:'application/json'}));a.download='pillar-creative-brief-repository.json';a.click();URL.revokeObjectURL(a.href)};
+  w.importRepository=async(e)=>{const file=e.target.files?.[0];if(!file)return;if(!await ensureUnlocked()){e.target.value='';return}const reader=new FileReader();reader.onload=async()=>{try{const parsed=JSON.parse(reader.result),incoming=Array.isArray(parsed)?parsed:(parsed.briefs||[]);for(const x of incoming){if(x&&x.id)await api('save',{brief:x})}await refreshRepo();w.flash(`Imported ${incoming.length} brief${incoming.length===1?'':'s'} to shared repository.`)}catch(err){w.flash('Could not import that JSON file.')}e.target.value=''};reader.readAsText(file)};
+  w.renderRepo();const saved=localStorage.getItem(CODE_KEY);if(saved){accessCode=saved;unlockRepo(true).catch(()=>{})}
+}
+frame.addEventListener('load',wire);
+setInterval(()=>{if(accessCode)refreshRepo().catch(()=>{})},60000);
+</script>
+</body>
+</html>
