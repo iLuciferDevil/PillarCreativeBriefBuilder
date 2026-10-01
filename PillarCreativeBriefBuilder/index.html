@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pillar Performance Creative Brief Builder</title>
+<style>
+:root{
+  --bg:#0b1020; --panel:#11182b; --panel2:#151f35; --text:#edf2ff; --muted:#94a3b8;
+  --line:#283451; --accent:#7dd3fc; --accent2:#a78bfa; --good:#86efac; --warn:#fde68a;
+}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:
+radial-gradient(circle at 0 0,rgba(125,211,252,.10),transparent 28%),
+radial-gradient(circle at 100% 0,rgba(167,139,250,.12),transparent 26%),var(--bg);color:var(--text)}
+.wrap{max-width:1380px;margin:auto;padding:28px}
+.header{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:20px}
+.brand h1{margin:0;font-size:28px;letter-spacing:-.5px}
+.brand p{margin:6px 0 0;color:var(--muted);max-width:720px}
+.badge{padding:8px 11px;border:1px solid var(--line);border-radius:999px;color:var(--accent);background:rgba(125,211,252,.06);white-space:nowrap}
+.grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(380px,.9fr);gap:18px}
+.card{background:rgba(17,24,43,.92);border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 45px rgba(0,0,0,.18)}
+.section{padding:18px;border-bottom:1px solid var(--line)}
+.section:last-child{border-bottom:0}
+.section h2{font-size:15px;margin:0 0 4px}
+.help{color:var(--muted);font-size:12px;margin-bottom:12px}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.full{grid-column:1/-1}
+label{display:block;font-size:12px;color:#cbd5e1;margin:0 0 6px}
+input,select,textarea{width:100%;border:1px solid var(--line);background:#0d1425;color:var(--text);border-radius:10px;padding:10px 11px;outline:none}
+input:focus,select:focus,textarea:focus{border-color:#4d6a94;box-shadow:0 0 0 3px rgba(125,211,252,.07)}
+textarea{min-height:86px;resize:vertical}
+.small textarea{min-height:64px}
+.inline{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:#0d1425;color:#cbd5e1;border-radius:999px;padding:8px 10px;cursor:pointer}
+.chip.active{background:rgba(125,211,252,.12);color:#fff;border-color:#4f7893}
+.actions{display:flex;gap:9px;flex-wrap:wrap;padding:16px 18px;position:sticky;bottom:0;background:linear-gradient(180deg,rgba(17,24,43,.85),#11182b 30%);border-top:1px solid var(--line);border-radius:0 0 16px 16px}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:650;cursor:pointer}
+.primary{background:linear-gradient(135deg,var(--accent),#60a5fa);color:#07111d}
+.secondary{background:#202a42;color:#fff;border:1px solid var(--line)}
+.ghost{background:transparent;color:#cbd5e1;border:1px solid var(--line)}
+.preview{position:sticky;top:18px;max-height:calc(100vh - 36px);display:flex;flex-direction:column}
+.previewTop{padding:16px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)}
+.previewTop h2{margin:0;font-size:15px}
+#output{padding:20px;overflow:auto;white-space:pre-wrap;font:13px/1.58 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#e5e7eb}
+.note{padding:14px 18px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+.ownerBox{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.owner{padding:11px;border:1px solid var(--line);border-radius:10px;background:#0d1425}
+.owner b{display:block;font-size:12px;margin-bottom:3px}
+.owner span{color:var(--muted);font-size:11px}
+.kpiRow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.hidden{display:none}
+.status{font-size:12px;color:var(--good);min-height:18px;padding:0 18px 10px}
+@media(max-width:950px){.grid{grid-template-columns:1fr}.preview{position:static;max-height:none}.fields,.ownerBox,.kpiRow{grid-template-columns:1fr}.wrap{padding:15px}.badge{display:none}}
+@media print{body{background:white;color:black}.formcard,.header .badge,.previewTop button,.note{display:none}.grid{display:block}.preview{position:static;max-height:none;border:0;box-shadow:none}#output{color:black;font-family:Arial,sans-serif;font-size:11pt}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div class="brand">
+      <h1>Performance Creative Brief Builder</h1>
+      <p>A lightweight handoff from Growth to Katie’s Brand/Creative team. The brief should explain the business problem, the hypothesis, exactly what is needed, and how Growth will judge the test.</p>
+    </div>
+    <div class="badge">Growth → Brand / Creative</div>
+  </div>
+
+  <div class="grid">
+    <div class="card formcard">
+      <div class="section">
+        <h2>0. Brief setup</h2><div class="help">Enough context to make the brief identifiable later.</div>
+        <div class="fields">
+          <div><label>Client / Brand</label><input id="brand" placeholder="e.g. Zig-Zag"></div>
+          <div><label>Campaign / Product</label><input id="campaign" placeholder="e.g. Sweatpants"></div>
+          <div><label>Date needed</label><input id="date" type="date"></div>
+          <div><label>Channel</label><select id="channel"><option>Meta</option><option>Google</option><option>TikTok</option><option>Programmatic</option><option>Other</option></select></div>
+          <div><label>Growth owner</label><input id="growthOwner" placeholder="Siddharth / Hafie"></div>
+          <div><label>Data input</label><input id="dataOwner" placeholder="Keerthana / Growth"></div>
+        </div>
+      </div>
+
+      <div class="section small">
+        <h2>1. Business objective</h2><div class="help">State the outcome, not the creative deliverable.</div>
+        <textarea id="objective" placeholder="e.g. Acquire new customers while keeping CPA below $25 and ROAS above 2.5x."></textarea>
+      </div>
+
+      <div class="section small">
+        <h2>2. Performance problem / opportunity</h2><div class="help">What is the data telling us that triggered this request?</div>
+        <textarea id="problem" placeholder="e.g. CTR has declined over the last 3 weeks while CPA has increased. Product-demo ads are still outperforming static lifestyle ads."></textarea>
+      </div>
+
+      <div class="section">
+        <h2>3. Audience</h2><div class="help">If we do not have a validated customer insight, say NA rather than inventing one.</div>
+        <div class="fields">
+          <div class="full"><label>Audience</label><input id="audience" placeholder="e.g. New customers interested in streetwear"></div>
+          <div><label>Journey stage</label><select id="stage"><option>Awareness</option><option>Consideration</option><option selected>Purchase</option><option>Retargeting</option></select></div>
+          <div><label>Customer insight / pain point</label><input id="insight" placeholder="NA if not validated"></div>
+        </div>
+      </div>
+
+      <div class="section small">
+        <h2>4. Hypothesis</h2><div class="help">Use: If we [change/test] for [audience], we expect [outcome] because [reason].</div>
+        <textarea id="hypothesis" placeholder="e.g. If we lead with comfort and fit for new prospects, we expect stronger CTR and lower CPA because comfort-led creative is converting better post-click."></textarea>
+      </div>
+
+      <div class="section">
+        <h2>5. Message / angle</h2><div class="help">Keep this directional. Katie’s team should still have room to solve the creative problem.</div>
+        <div class="fields">
+          <div><label>Primary angle</label><input id="angle" placeholder="Comfort + fit"></div>
+          <div><label>Supporting message</label><input id="support" placeholder="Made for all-day wear"></div>
+          <div><label>Proof point</label><input id="proof" placeholder="Fabric / reviews / product feature"></div>
+          <div><label>Offer, if applicable</label><input id="offer" placeholder="NA"></div>
+          <div><label>CTA</label><input id="cta" placeholder="Shop now"></div>
+          <div><label>Brand / message architecture reference</label><input id="architecture" placeholder="Link or doc name, if relevant"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>6. Creative requirement</h2><div class="help">This is the actual ask to Katie.</div>
+        <div class="fields">
+          <div><label>Static ads</label><input id="statics" type="number" min="0" value="2"></div>
+          <div><label>Short-form videos</label><input id="videos" type="number" min="0" value="0"></div>
+          <div><label>Carousels</label><input id="carousels" type="number" min="0" value="0"></div>
+          <div><label>Sizes / ratios</label><input id="ratios" value="1:1 + 9:16"></div>
+          <div class="full"><label>Mandatory creative notes</label><textarea id="creativeNotes" placeholder="e.g. Product visible immediately. Keep copy minimal. Use approved logo lockup."></textarea></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>7. What are we testing?</h2><div class="help">One primary variable per test whenever possible.</div>
+        <div class="fields">
+          <div><label>Test variable</label><select id="variable"><option>Hook</option><option selected>Angle</option><option>Format</option><option>Proof</option><option>CTA</option><option>Offer</option><option>Visual style</option></select></div>
+          <div><label>Control</label><input id="control" placeholder="Current best-performing creative"></div>
+          <div class="full"><label>Variants</label><textarea id="variants" placeholder="Variant A: Comfort-led&#10;Variant B: Fit-led"></textarea></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>8. Measurement</h2><div class="help">The brief is incomplete without a baseline and decision rule.</div>
+        <div class="fields">
+          <div><label>Primary KPI</label><input id="primaryKpi" placeholder="CPA"></div>
+          <div><label>Supporting metrics</label><input id="supporting" placeholder="CTR, CPC, CVR"></div>
+          <div><label>Baseline</label><input id="baseline" placeholder="$28 CPA"></div>
+          <div><label>Success threshold</label><input id="success" placeholder="CPA < $25 with stable CVR"></div>
+          <div><label>Expected test period</label><input id="period" placeholder="7 days / sufficient conversion volume"></div>
+          <div><label>Minimum evidence note</label><input id="evidence" placeholder="Avoid calling winner before enough spend/conversions"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>9. References</h2><div class="help">Links are better than screenshots floating around Slack.</div>
+        <div class="fields">
+          <div class="full"><label>Current winning ads</label><input id="winning" placeholder="Link / campaign / ad IDs"></div>
+          <div class="full"><label>Current losing ads / learning</label><input id="losing" placeholder="Link / campaign / learning"></div>
+          <div class="full"><label>Landing page</label><input id="landing" placeholder="URL"></div>
+          <div class="full"><label>Previous test / performance data</label><input id="dataRef" placeholder="Dashboard / sheet / report link"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>10. Post-test readout</h2><div class="help">Growth completes this after the test. Keeping it in the same brief builds a usable learning library.</div>
+        <div class="fields">
+          <div><label>Result</label><select id="result"><option>Pending</option><option>Win</option><option>Loss</option><option>Inconclusive</option></select></div>
+          <div><label>Next recommendation</label><input id="next" placeholder="What should we test next?"></div>
+          <div class="full"><label>What worked</label><textarea id="worked"></textarea></div>
+          <div class="full"><label>What did not</label><textarea id="didnt"></textarea></div>
+          <div class="full"><label>What we learned</label><textarea id="learned"></textarea></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Who owns what</h2>
+        <div class="ownerBox">
+          <div class="owner"><b>Growth</b><span>Siddharth / Hafie owns problem, hypothesis, ask, KPI and test decision.</span></div>
+          <div class="owner"><b>Data</b><span>Keerthana can validate baseline, trend and supporting evidence.</span></div>
+          <div class="owner"><b>Brand / Creative</b><span>Katie owns creative solution, execution quality and brand consistency.</span></div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="primary" onclick="generate()">Generate brief</button>
+        <button class="secondary" onclick="copyBrief()">Copy brief</button>
+        <button class="secondary" onclick="downloadTxt()">Download .txt</button>
+        <button class="ghost" onclick="window.print()">Print / Save PDF</button>
+        <button class="ghost" onclick="sample()">Load example</button>
+        <button class="ghost" onclick="clearForm()">Clear</button>
+      </div>
+      <div id="status" class="status"></div>
+    </div>
+
+    <div class="card preview">
+      <div class="previewTop"><h2>Generated brief</h2><button class="ghost" onclick="copyBrief()">Copy</button></div>
+      <div id="output">Fill the form and click “Generate brief”.</div>
+      <div class="note">Tip: send the generated brief to Katie as the single source of truth. Avoid adding new asks in Slack after handoff unless the brief itself is updated.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const ids = ["brand","campaign","date","channel","growthOwner","dataOwner","objective","problem","audience","stage","insight","hypothesis","angle","support","proof","offer","cta","architecture","statics","videos","carousels","ratios","creativeNotes","variable","control","variants","primaryKpi","supporting","baseline","success","period","evidence","winning","losing","landing","dataRef","result","next","worked","didnt","learned"];
+const v=id=>document.getElementById(id).value.trim();
+const safe=(x)=>x||"NA";
+
+function generate(){
+  const deliverables=[];
+  if(+v("statics")) deliverables.push(`${v("statics")} static ad${+v("statics")===1?"":"s"}`);
+  if(+v("videos")) deliverables.push(`${v("videos")} short-form video${+v("videos")===1?"":"s"}`);
+  if(+v("carousels")) deliverables.push(`${v("carousels")} carousel${+v("carousels")===1?"":"s"}`);
+
+  const out =
+`PERFORMANCE CREATIVE BRIEF
+
+Client / Brand: ${safe(v("brand"))}
+Campaign / Product: ${safe(v("campaign"))}
+Date needed: ${safe(v("date"))}
+Channel: ${safe(v("channel"))}
+Growth owner: ${safe(v("growthOwner"))}
+Data input: ${safe(v("dataOwner"))}
+
+1. BUSINESS OBJECTIVE
+${safe(v("objective"))}
+
+2. PERFORMANCE PROBLEM / OPPORTUNITY
+${safe(v("problem"))}
+
+3. AUDIENCE
+Audience: ${safe(v("audience"))}
+Journey stage: ${safe(v("stage"))}
+Relevant customer insight / pain point: ${safe(v("insight"))}
+
+4. HYPOTHESIS
+${safe(v("hypothesis"))}
+
+5. MESSAGE / ANGLE TO EXPLORE
+Primary angle: ${safe(v("angle"))}
+Supporting message: ${safe(v("support"))}
+Proof point: ${safe(v("proof"))}
+Offer: ${safe(v("offer"))}
+CTA: ${safe(v("cta"))}
+Brand / message architecture: ${safe(v("architecture"))}
+
+6. CREATIVE REQUIREMENT
+Deliverables: ${deliverables.length?deliverables.join(", "):"NA"}
+Sizes / ratios: ${safe(v("ratios"))}
+Mandatory notes: ${safe(v("creativeNotes"))}
+
+7. WHAT ARE WE TESTING?
+Primary variable: ${safe(v("variable"))}
+Control: ${safe(v("control"))}
+Test variants:
+${safe(v("variants"))}
+
+8. HOW WE WILL JUDGE IT
+Primary KPI: ${safe(v("primaryKpi"))}
+Supporting metrics: ${safe(v("supporting"))}
+Baseline: ${safe(v("baseline"))}
+Success threshold: ${safe(v("success"))}
+Expected test period: ${safe(v("period"))}
+Evidence / decision note: ${safe(v("evidence"))}
+
+9. REFERENCES
+Current winning ads: ${safe(v("winning"))}
+Current losing ads / learning: ${safe(v("losing"))}
+Landing page: ${safe(v("landing"))}
+Previous test / performance data: ${safe(v("dataRef"))}
+
+POST-TEST READOUT
+Result: ${safe(v("result"))}
+What worked: ${safe(v("worked"))}
+What did not: ${safe(v("didnt"))}
+What we learned: ${safe(v("learned"))}
+Next creative recommendation: ${safe(v("next"))}
+
+OWNERSHIP
+Growth: owns the performance problem, hypothesis, ask, measurement and post-test decision.
+Data: validates the baseline, trend and supporting evidence where needed.
+Brand / Creative: owns the creative solution and brand execution within the agreed brief.`;
+
+  document.getElementById("output").textContent=out;
+  localStorage.setItem("pillarBriefForm",JSON.stringify(Object.fromEntries(ids.map(id=>[id,document.getElementById(id).value]))));
+  flash("Brief generated and saved locally.");
+}
+
+async function copyBrief(){
+  const text=document.getElementById("output").textContent;
+  await navigator.clipboard.writeText(text);
+  flash("Copied to clipboard.");
+}
+function downloadTxt(){
+  generate();
+  const text=document.getElementById("output").textContent;
+  const name=((v("brand")||"brand")+"-"+(v("campaign")||"creative-brief")).replace(/[^a-z0-9]+/gi,"-").toLowerCase();
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([text],{type:"text/plain"}));
+  a.download=name+".txt"; a.click(); URL.revokeObjectURL(a.href);
+}
+function sample(){
+  const data={
+    brand:"Zig-Zag",campaign:"Sweatpants",channel:"Meta",growthOwner:"Hafie",dataOwner:"Keerthana",
+    objective:"Drive new customer acquisition efficiently while protecting conversion rate and CPA.",
+    problem:"Current static creative has started to fatigue. CTR is softening while CPA is moving up. We need fresh variants without changing the offer or landing page.",
+    audience:"New customers / prospecting audiences",stage:"Purchase",insight:"NA — no validated customer insight available for this campaign yet.",
+    hypothesis:"If we test comfort-led versus fit-led messaging for new prospects, we expect stronger click-through and lower CPA because the current product story is not giving customers a clear reason to choose the sweatpants.",
+    angle:"Comfort + fit",support:"Everyday wear without looking sloppy",proof:"Product construction, fabric and fit",offer:"NA",cta:"Shop now",
+    statics:"2",videos:"0",carousels:"0",ratios:"1:1 + 9:16",creativeNotes:"Two statics only. Keep each variant focused on one angle. Product should be immediately clear. Use approved brand system and keep on-image copy tight.",
+    variable:"Angle",control:"Current best-performing sweatpants static",variants:"Variant A: Comfort-led\nVariant B: Fit-led",
+    primaryKpi:"CPA",supporting:"CTR, CPC, landing-page CVR",baseline:"Enter current 7–14 day baseline",success:"Lower CPA versus control without deterioration in landing-page CVR",period:"7 days or sufficient conversion volume",evidence:"Keerthana to validate baseline before launch.",
+    result:"Pending"
+  };
+  for(const [k,val] of Object.entries(data)) if(document.getElementById(k)) document.getElementById(k).value=val;
+  generate();
+}
+function clearForm(){
+  ids.forEach(id=>{const el=document.getElementById(id); if(el.tagName==="SELECT") el.selectedIndex=0; else if(el.type==="number") el.value="0"; else el.value="";});
+  document.getElementById("statics").value="2";document.getElementById("ratios").value="1:1 + 9:16";
+  document.getElementById("output").textContent="Fill the form and click “Generate brief”.";
+  localStorage.removeItem("pillarBriefForm"); flash("Cleared.");
+}
+function flash(msg){
+  const s=document.getElementById("status");s.textContent=msg;setTimeout(()=>s.textContent="",2200);
+}
+(function restore(){
+  const saved=localStorage.getItem("pillarBriefForm");
+  if(saved){try{const d=JSON.parse(saved);ids.forEach(id=>{if(d[id]!=null && document.getElementById(id))document.getElementById(id).value=d[id]});generate();}catch(e){}}
+})();
+</script>
+</body>
+</html>
