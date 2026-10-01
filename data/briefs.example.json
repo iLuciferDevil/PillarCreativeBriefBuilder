@@ -1,0 +1,26 @@
+{
+  "briefs": [
+    {
+      "id": "BRF-ZIG-SWEATPANTS-EXAMPLE",
+      "brand": "Zig-Zag",
+      "campaign": "Sweatpants",
+      "channel": "Meta",
+      "briefStatus": "Ready for Creative",
+      "growthOwner": "Hafie",
+      "dataOwner": "Keerthana",
+      "objective": "Drive new customer acquisition efficiently while protecting conversion rate and CPA.",
+      "problem": "Current static creative has started to fatigue. CTR is softening while CPA is moving up.",
+      "audience": "New customers / prospecting audiences",
+      "stage": "Purchase",
+      "hypothesis": "Test comfort-led versus fit-led messaging to improve CTR and lower CPA.",
+      "angle": "Comfort + fit",
+      "statics": "2",
+      "videos": "0",
+      "carousels": "0",
+      "variable": "Angle",
+      "primaryKpi": "CPA",
+      "supporting": "CTR, CPC, landing-page CVR",
+      "result": "Pending"
+    }
+  ]
+}
